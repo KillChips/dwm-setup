@@ -74,7 +74,7 @@ PKGS_MISC=(
   brightnessctl
   xterm libavcodec-extra
   firefox-esr ntfs-3g
-  suckless-tools exa
+  suckless-tools eza
 )
 
 # Curated dwm patches (vanilla dwm patches from suckless)
