@@ -124,9 +124,9 @@ sudo systemctl enable avahi-daemon acpid
 # ============
 
 # Package Installation
-install_packages() {
+#install_packages() {
 
-}
+#}
 
 # Clone or update suckless repos 
 clone_or_update_repo() {
