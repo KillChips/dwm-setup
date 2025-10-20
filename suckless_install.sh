@@ -30,6 +30,8 @@ PKGS_CORE=(
   dbus-x11 libusb-0.1-4 libnotify-bin libnotify-dev
   network-manager-gnome make cmake
   ninja-build pkg-config picom
+  #libx11-dev libxft-dev libxinerama-dev libxcb1-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-ewmh-dev pkg-config
+  libxcb-util-dev
 )
 
 PKGS_AUDIO=(
