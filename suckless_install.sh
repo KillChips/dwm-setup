@@ -23,6 +23,15 @@ DWMBLOCKS_REPO="https://github.com/UtkarshVerma/dwmblocks-async"
 exec > >(tee -a "$LOG_FILE") 2>&1
 trap "rm -rf $TEMP_DIR" EXIT
 
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+die() { echo -e "${RED}ERROR: $*${NC}" >&2; exit 1; }
+msg() { echo -e "${CYAN}$*${NC}"; }
+
 # List of packages to install
 PKGS_CORE=(
   build-essential git curl wget patch
