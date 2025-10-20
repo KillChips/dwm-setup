@@ -85,7 +85,7 @@ DWM_PATCHES=(
 # ==================
 # INSTALL PACKAGES
 # ==================
-info "Updating APT and installing packages (may prompt for sudo password)..."
+msg "Updating APT and installing packages (may prompt for sudo password)..."
 sudo apt update && sudo apt full-upgrade -y
 
 # Install packages
@@ -100,11 +100,11 @@ sudo apt install -y "${PACKAGES_BUILD[@]}" || die "Failed to install build packa
 sudo apt install -y "${PKGS_MISC[@]}" || die "Failed to install misc packages"
 
 # Enable NetworkManager service
-info "Enabling NetworkManager..."
+msg "Enabling NetworkManager..."
 sudo systemctl enable --now NetworkManager || true
 
 # Enable PipeWire user services (may fail if systemd --user not available in current session)
-info "Enabling PipeWire user services (best-effort)..."
+msg "Enabling PipeWire user services (best-effort)..."
 systemctl --user enable --now pipewire pipewire-pulse wireplumber || true
 
 # Enable services
@@ -126,10 +126,10 @@ clone_or_update_repo() {
   # Checks to see if the directory already exists
   #if it does it updates it, if not it clones it
   if [ -d "$dest/.git" ]; then
-    info "Pulling latest for $(basename "$dest")"
+    msg "Pulling latest for $(basename "$dest")"
     git -C "$dest" pull --ff-only || true
   else
-    info "Cloning $(basename "$dest")"
+    msg "Cloning $(basename "$dest")"
     git clone "$repo_url" "$dest"
   fi
 }
@@ -145,10 +145,10 @@ build_and_install() {
 
   # Apply patches from PATCHES_DIR/dwm if building dwm
   if [ "$name" = "dwm" ]; then
-    info "Applying dwm patches from $PATCHES_DIR/dwm (if any)..."
+    msg "Applying dwm patches from $PATCHES_DIR/dwm (if any)..."
     for patchfile in "$PATCHES_DIR/dwm"/*.diff; do
       [ -e "$patchfile" ] || break
-      info "Applying $(basename "$patchfile")"
+      msg "Applying $(basename "$patchfile")"
       # Try to apply; allow failure and continue so user can inspect
       if ! patch -p1 < "$patchfile"; then
         warn "Patch $(basename "$patchfile") failed — you may need to apply manually or check for version mismatch"
@@ -156,7 +156,7 @@ build_and_install() {
     done
   fi
 
-  info "Building and installing $name"
+  msg "Building and installing $name"
   sudo make clean install || error "make install failed for $name"
 
 }
@@ -172,11 +172,11 @@ build_and_install "dwm" "$DWM_REPO"
 # =====================================
 XINIT="$HOME/.xinitrc"
 if [ -f "$XINIT" ]; then
-  info "$XINIT already exists — creating a backup at ${XINIT}.bak"
+  msg "$XINIT already exists — creating a backup at ${XINIT}.bak"
   cp "$XINIT" "${XINIT}.bak"
 fi
 
-info "Writing a minimal ~/.xinitrc that autostarts nm-applet, slstatus, and picom"
+msg "Writing a minimal ~/.xinitrc that autostarts nm-applet, slstatus, and picom"
 cat > "$XINIT" <<'EOF'
 # ~/.xinitrc — minimal dwm autostart
 # Start background services and programs
@@ -195,4 +195,4 @@ chmod +x "$XINIT"
 # =============================
 # FINISH
 # =============================
-info "Installation finished."
+msg "Installation finished."
