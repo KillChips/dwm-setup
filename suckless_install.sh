@@ -202,7 +202,7 @@ build_and_install() {
   fi
 
   msg "Building and installing $name"
-  sudo make clean install || error "make install failed for $name"
+  sudo make clean install || msg "make install failed for $name"
 
 }
 
