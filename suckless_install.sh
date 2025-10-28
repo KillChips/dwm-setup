@@ -196,7 +196,7 @@ build_and_install() {
       msg "Applying $(basename "$patchfile")"
       # Try to apply; allow failure and continue so user can inspect
       if ! patch -p1 < "$patchfile"; then
-        warn "Patch $(basename "$patchfile") failed — you may need to apply manually or check for version mismatch"
+        msg "Patch $(basename "$patchfile") failed — you may need to apply manually or check for version mismatch"
       fi
     done
   fi
