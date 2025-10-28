@@ -200,7 +200,8 @@ build_and_install "dwmblocks-async" "$DWMBLOCKS_REPO"
 build_and_install "dwm" "$DWM_REPO"
 
 # Download and apply patches to dwm after building/installing
-download_and_apply_patches "$CONFIG_DIR/dwm"
+#download_and_apply_patches "$CONFIG_DIR/dwm"
+download_and_apply_patches
 
 # =====================================
 # USER CONFIG: .xinitrc and autostart
