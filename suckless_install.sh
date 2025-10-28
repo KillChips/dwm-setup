@@ -9,7 +9,7 @@ set -e
 # Global variables of the paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 #LOCAL_DIR="$HOME/.local/src"  #do I want to install it in .local and make a symlink file in .config for the dwm config file 
-CONFIG_DIR="$HOME/.config/.suckless"
+CONFIG_DIR="$HOME/.config/suckless"
 PATCHES_DIR="$CONFIG_DIR/patches"
 TEMP_DIR="/tmp/dwm-setup"
 LOG_FILE="$HOME/dwm-install.log"
@@ -32,6 +32,8 @@ NC='\033[0m'
 die() { echo -e "${RED}ERROR: $*${NC}" >&2; exit 1; }
 msg() { echo -e "${CYAN}$*${NC}"; }
 
+mkdir -p "$CONFIG_DIR" "$PATCHES_DIR" "$TEMP_DIR"
+
 # List of packages to install
 PKGS_CORE=(
   build-essential git curl wget patch
@@ -51,22 +53,23 @@ PKGS_AUDIO=(
 PKGS_UTILITIES=(
   avahi-daemon acpi acpid xfce4-power-manager
   flameshot qimgv xdg-user-dirs-gtk fd-find
+  powertop laptop-mode-tools btop
 )
 
-PACKAGES_UI=(
-  rofi dunst feh lxappearance network-manager-gnome 
+PKGS_UI=(
+  rofi dunst feh lxappearance network-manager-gnome lxpolkit
 )
 
-PACKAGES_FILE_MANAGER=(
+PKGS_FILE_MANAGER=(
   thunar thunar-archive-plugin thunar-volman
   gvfs-backends dialog mtools smbclient cifs-utils unzip
 )
 
-PPKGS_FONTS=(
+PKGS_FONTS=(
   fonts-recommended fonts-font-awesome fonts-terminus fonts-dejavu fonts-noto-core
 )
 
-PACKAGES_BUILD=(
+PKGS_BUILD=(
   make cmake ninja-build curl pkg-config
 )
 
@@ -75,21 +78,26 @@ PKGS_MISC=(
   xterm libavcodec-extra
   firefox-esr ntfs-3g
   suckless-tools eza
+  nala fastfetch
 )
 
 # Curated dwm patches (vanilla dwm patches from suckless)
 # NOTE: these filenames correspond to the upstream patch pages; the script will try to download them.
 DWM_PATCHES=(
-  "systray/dwm-systray-6.4.diff"
-  "pertag/dwm-pertag-6.4.diff"
-  "viewontag/dwm-viewontag-6.4.diff"
-  "fakefullscreen/dwm-fakefullscreen-6.4.diff"
-  "alwayscenter/dwm-alwayscenter-6.4.diff"
-  "savefloats/dwm-savefloats-6.4.diff"
-  "swallow/dwm-swallow-6.4.diff"
-  "scratchpads/dwm-scratchpads-6.4.diff"
-  "xresources/dwm-xresources-6.4.diff"
+  # [Patch Name]                     [URL]
+  "systray systray/dwm-systray-20230922-9f88553.diff"
+  "pertag pertag/dwm-pertag-6.4.diff"
+  "attachside attachaside/dwm-attachaside-6.4.diff"
+  "movestack movestack/dwm-movestack-6.2.diff"
+  "focusmaster focusmaster/dwm-focusmaster-6.2.diff"
+  "restartsig restartsig/dwm-restartsig-6.2.diff"
+  "uselessgap uselessgap/dwm-uselessgap-6.2.diff"
+  "actualfullscreen actualfullscreen/dwm-actualfullscreen-6.2.diff"
+  "scratchpads scratchpads/dwm-scratchpads-6.4.diff"
+  "autostart autostart/dwm-autostart-6.4.diff"
+  "hide_vacant_tags hide_vacant_tags/dwm-hide_vacant_tags-6.4.diff"
 )
+
 
 # ==================
 # INSTALL PACKAGES
@@ -102,10 +110,10 @@ msg "Installing curated packages"
 sudo apt install -y "${PKGS_CORE[@]}" || die "Failed to install core packages"
 sudo apt install -y "${PKGS_AUDIO[@]}" || die "Failed to install audio packages"
 sudo apt install -y "${PKGS_UTILITIES[@]}" || die "Failed to install utility packages"
-sudo apt install -y "${PACKAGES_UI[@]}" || die "Failed to install UI packages"
-sudo apt install -y "${PACKAGES_FILE_MANAGER[@]}" || die "Failed to install file manager packages"
-sudo apt install -y "${PPKGS_FONTS[@]}" || die "Failed to install font packages"
-sudo apt install -y "${PACKAGES_BUILD[@]}" || die "Failed to install build packages"
+sudo apt install -y "${PKGS_UI[@]}" || die "Failed to install UI packages"
+sudo apt install -y "${PKGS_FILE_MANAGER[@]}" || die "Failed to install file manager packages"
+sudo apt install -y "${PKGS_FONTS[@]}" || die "Failed to install font packages"
+sudo apt install -y "${PKGS_BUILD[@]}" || die "Failed to install build packages"
 sudo apt install -y "${PKGS_MISC[@]}" || die "Failed to install misc packages"
 
 # Enable NetworkManager service
@@ -123,10 +131,38 @@ sudo systemctl enable avahi-daemon acpid
 #  FUNCTIONS:
 # ============
 
-# Package Installation
-#install_packages() {
+# Download and apply dwm patches
+# Optionally pass the repo directory as first arg to apply patches immediately:
+# download_and_apply_patches /path/to/dwm
+download_and_apply_patches() {
+  local repo_dir="${1:-}"
+  mkdir -p "$PATCHES_DIR/dwm"
 
-#}
+  for entry in "${DWM_PATCHES[@]}"; do
+    # entry format: "<name> <relative/path/to/patch.diff>"
+    local name="${entry%% *}"
+    local relpath="${entry#* }"
+    local url="https://dwm.suckless.org/patches/$relpath"
+    local dest="$PATCHES_DIR/dwm/${name}.diff"
+
+    if [ -f "$dest" ]; then
+      msg "Patch $name already downloaded -> $dest"
+    else
+      msg "Downloading patch '$name' from $url -> $dest"
+      curl -fsSL -o "$dest" "$url" || die "Failed to download patch $url"
+    fi
+
+    # If a repo dir was provided, attempt to apply the patch there.
+    if [ -n "$repo_dir" ] && [ -d "$repo_dir" ]; then
+      msg "Applying patch '$name' to $(basename "$repo_dir")"
+      if ! (cd "$repo_dir" && patch -p1 < "$dest"); then
+        msg "Warning: applying patch '$name' failed — skipping (check for version mismatch)"
+      else
+        msg "Applied patch '$name' successfully"
+      fi
+    fi
+  done
+}
 
 # Clone or update suckless repos 
 clone_or_update_repo() {
@@ -176,6 +212,9 @@ build_and_install "dmenu" "$DMENU_REPO"
 build_and_install "dwmblocks-async" "$DWMBLOCKS_REPO"
 build_and_install "dwm" "$DWM_REPO"
 
+# Download and apply patches to dwm after building/installing
+download_and_apply_patches "$CONFIG_DIR/dwm"
+
 # =====================================
 # USER CONFIG: .xinitrc and autostart
 # =====================================
@@ -191,10 +230,13 @@ cat > "$XINIT" <<'EOF'
 # Start background services and programs
 # Network tray
 nm-applet &
-# Status bar (slstatus)
-slstatus &
+# polkit
+lxpolkit &
+# Status bar (dwmblocks-async)
+dwmblocks &
 # Compositor
 picom --daemon &
+dunst &
 # Start dwm
 exec dwm
 EOF
