@@ -86,15 +86,15 @@ PKGS_MISC=(
 DWM_PATCHES=(
   # [Patch Name]                     [URL]
   "systray systray/dwm-systray-20230922-9f88553.diff"
-  "pertag pertag/dwm-pertag-6.4.diff"
+  "pertag pertag/dwm-pertag-20200914-61bb8b2.diff"
   "attachside attachaside/dwm-attachaside-6.4.diff"
-  "movestack movestack/dwm-movestack-6.2.diff"
-  "focusmaster focusmaster/dwm-focusmaster-6.2.diff"
-  "restartsig restartsig/dwm-restartsig-6.2.diff"
-  "uselessgap uselessgap/dwm-uselessgap-6.2.diff"
-  "actualfullscreen actualfullscreen/dwm-actualfullscreen-6.2.diff"
-  "scratchpads scratchpads/dwm-scratchpads-6.4.diff"
-  "autostart autostart/dwm-autostart-6.4.diff"
+  "movestack movestack/dwm-movestack-20211115-a786211.diff"
+  "focusmaster focusmaster/dwm-focusmaster-20210804-138b405.diff"
+  "restartsig restartsig/dwm-restartsig-20180523-6.2.diff "
+  "uselessgap uselessgap/dwm-uselessgap-20211119-58414bee958f2.diff"
+  "actualfullscreen actualfullscreen/dwm-actualfullscreen-20211013-cb3f58a.diff"
+  "scratchpads scratchpads/dwm-scratchpads-20200414-728d397b.diff"
+  "autostart autostart/dwm-autostart-20210120-cb3f58a.diff"
   "hide_vacant_tags hide_vacant_tags/dwm-hide_vacant_tags-6.4.diff"
 )
 
