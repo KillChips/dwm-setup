@@ -90,7 +90,7 @@ DWM_PATCHES=(
   "attachside attachaside/dwm-attachaside-6.4.diff"
   "movestack movestack/dwm-movestack-20211115-a786211.diff"
   "focusmaster focusmaster/dwm-focusmaster-20210804-138b405.diff"
-  "restartsig restartsig/dwm-restartsig-20180523-6.2.diff "
+  "restartsig restartsig/dwm-restartsig-20180523-6.2.diff"
   "uselessgap uselessgap/dwm-uselessgap-20211119-58414bee958f2.diff"
   "actualfullscreen actualfullscreen/dwm-actualfullscreen-20211013-cb3f58a.diff"
   "scratchpads scratchpads/dwm-scratchpads-20200414-728d397b.diff"
