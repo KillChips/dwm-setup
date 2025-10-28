@@ -206,6 +206,8 @@ build_and_install() {
 
 }
 
+download_and_apply_patches
+
 # Build order: st, dmenu, slstatus, dwm (dwm last or after dependencies)
 build_and_install "st" "$ST_REPO"
 build_and_install "dmenu" "$DMENU_REPO"
@@ -213,7 +215,7 @@ build_and_install "dwmblocks-async" "$DWMBLOCKS_REPO"
 build_and_install "dwm" "$DWM_REPO"
 
 # Download and apply patches to dwm after building/installing
-download_and_apply_patches "$CONFIG_DIR/dwm"
+#download_and_apply_patches "$CONFIG_DIR/dwm"
 
 # =====================================
 # USER CONFIG: .xinitrc and autostart
