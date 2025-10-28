@@ -156,7 +156,7 @@ download_and_apply_patches() {
     if [ -n "$repo_dir" ] && [ -d "$repo_dir" ]; then
       msg "Applying patch '$name' to $(basename "$repo_dir")"
       if ! (cd "$repo_dir" && patch -p1 < "$dest"); then
-        msg "Warning: applying patch '$name' failed — skipping (check for version mismatch)"
+        die "Warning: applying patch '$name' failed — skipping (check for version mismatch)"
       else
         msg "Applied patch '$name' successfully"
       fi
@@ -189,7 +189,7 @@ build_and_install() {
   cd "$path"
 
   msg "Building and installing $name"
-  sudo make clean install || msg "make install failed for $name"
+  sudo make clean install || die "make install failed for $name"
 
 }
 
