@@ -10,7 +10,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 #LOCAL_DIR="$HOME/.local/src"  #do I want to install it in .local and make a symlink file in .config for the dwm config file 
 CONFIG_DIR="$HOME/.config/suckless"
-PATCHES_DIR="$CONFIG_DIR/patches"
+#PATCHES_DIR="$CONFIG_DIR/dwm/patches"
 TEMP_DIR="/tmp/dwm-setup"
 LOG_FILE="$HOME/dwm-install.log"
 
@@ -32,7 +32,7 @@ NC='\033[0m'
 die() { echo -e "${RED}ERROR: $*${NC}" >&2; exit 1; }
 msg() { echo -e "${CYAN}$*${NC}"; }
 
-mkdir -p "$CONFIG_DIR" "$PATCHES_DIR" "$TEMP_DIR"
+mkdir -p "$CONFIG_DIR" "$TEMP_DIR"
 
 # List of packages to install
 PKGS_CORE=(
@@ -87,15 +87,15 @@ DWM_PATCHES=(
   # [Patch Name]                     [URL]
   "systray systray/dwm-systray-20230922-9f88553.diff"
   "pertag pertag/dwm-pertag-20200914-61bb8b2.diff"
-  "attachside attachaside/dwm-attachaside-6.4.diff"
-  "movestack movestack/dwm-movestack-20211115-a786211.diff"
-  "focusmaster focusmaster/dwm-focusmaster-20210804-138b405.diff"
-  "restartsig restartsig/dwm-restartsig-20180523-6.2.diff"
-  "uselessgap uselessgap/dwm-uselessgap-20211119-58414bee958f2.diff"
-  "actualfullscreen actualfullscreen/dwm-actualfullscreen-20211013-cb3f58a.diff"
   "scratchpads scratchpads/dwm-scratchpads-20200414-728d397b.diff"
-  "autostart autostart/dwm-autostart-20210120-cb3f58a.diff"
+  "movestack movestack/dwm-movestack-20211115-a786211.diff"
+  "attachside attachaside/dwm-attachaside-6.4.diff"
   "hide_vacant_tags hide_vacant_tags/dwm-hide_vacant_tags-6.4.diff"
+  "focusmaster focusmaster/dwm-focusmaster-20210804-138b405.diff"
+  #"uselessgap uselessgap/dwm-uselessgap-20211119-58414bee958f2.diff"
+  #"actualfullscreen actualfullscreen/dwm-actualfullscreen-20211013-cb3f58a.diff"
+  "autostart autostart/dwm-autostart-20210120-cb3f58a.diff"
+  "restartsig restartsig/dwm-restartsig-20180523-6.2.diff"
 )
 
 
@@ -136,14 +136,14 @@ sudo systemctl enable avahi-daemon acpid
 # download_and_apply_patches /path/to/dwm
 download_and_apply_patches() {
   local repo_dir="${1:-}"
-  mkdir -p "$PATCHES_DIR/dwm"
+  mkdir -p "$CONFIG_DIR/dwm/patches"
 
   for entry in "${DWM_PATCHES[@]}"; do
     # entry format: "<name> <relative/path/to/patch.diff>"
     local name="${entry%% *}"
     local relpath="${entry#* }"
     local url="https://dwm.suckless.org/patches/$relpath"
-    local dest="$PATCHES_DIR/dwm/${name}.diff"
+    local dest="$CONFIG_DIR/dwm/patches/${name}.diff"
 
     if [ -f "$dest" ]; then
       msg "Patch $name already downloaded -> $dest"
