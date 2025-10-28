@@ -188,25 +188,10 @@ build_and_install() {
   clone_or_update_repo "$repo" "$path"
   cd "$path"
 
-  # Apply patches from PATCHES_DIR/dwm if building dwm
-  if [ "$name" = "dwm" ]; then
-    msg "Applying dwm patches from $PATCHES_DIR/dwm (if any)..."
-    for patchfile in "$PATCHES_DIR/dwm"/*.diff; do
-      [ -e "$patchfile" ] || break
-      msg "Applying $(basename "$patchfile")"
-      # Try to apply; allow failure and continue so user can inspect
-      if ! patch -p1 < "$patchfile"; then
-        msg "Patch $(basename "$patchfile") failed — you may need to apply manually or check for version mismatch"
-      fi
-    done
-  fi
-
   msg "Building and installing $name"
   sudo make clean install || msg "make install failed for $name"
 
 }
-
-download_and_apply_patches
 
 # Build order: st, dmenu, slstatus, dwm (dwm last or after dependencies)
 build_and_install "st" "$ST_REPO"
@@ -215,7 +200,7 @@ build_and_install "dwmblocks-async" "$DWMBLOCKS_REPO"
 build_and_install "dwm" "$DWM_REPO"
 
 # Download and apply patches to dwm after building/installing
-#download_and_apply_patches "$CONFIG_DIR/dwm"
+download_and_apply_patches "$CONFIG_DIR/dwm"
 
 # =====================================
 # USER CONFIG: .xinitrc and autostart
